@@ -8,8 +8,8 @@ intents.message_content=True
 client = discord.Client(intents=intents)
 
 
-message = [{"role":"system","content":"You are a helpful assistant"}]
-
+messages = [{"role":"system","content":"You are a helpful assistant"}]
+openai.api_key ="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"
 @client.event
 async def on_ready():
     print("bot is on")
@@ -18,7 +18,13 @@ async def on_ready():
 async def on_message(message):
     if message.author == client.user:
         return
-    
-    await message.channel.send(message.content)
+    user_input = message.content
+    messages.append({"role":"user","content":user_input})
+    completion = openai.ChatCompletion.create(
+        model = "gpt-3.5-turbo",
+        messages = messages
+    )
+    chat_response=completion.choices[0].message.content
+    await message.channel.send(chat_response)
 
 client.run(dc_token)
